@@ -10,6 +10,10 @@ import java.util.LinkedList;
 
 public class Server {
 
+    /**
+     * переделываю сервер на работу с многопоточностью
+     */
+    
     // порт для подключения
     public static final int PORT = 18080;
     // список клиентов
