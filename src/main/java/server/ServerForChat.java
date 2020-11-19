@@ -54,7 +54,6 @@ class ServerForChat extends Thread {
         }
     }
 
-
     private void send(String msg) {
         try {
             out.write(msg + "\n");

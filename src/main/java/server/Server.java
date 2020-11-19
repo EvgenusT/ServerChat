@@ -1,7 +1,5 @@
 package server;
 
-import javafx.application.Platform;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -9,13 +7,6 @@ import java.net.Socket;
 import java.util.LinkedList;
 
 public class Server {
-
-    /**
-     * переделываю сервер на работу с многопоточностью
-     *
-     *
-     * 
-     */
 
     // порт для подключения
     public static final int PORT = 18080;
@@ -26,9 +17,11 @@ public class Server {
 
     public static ServerSocket server = null;
 
+    static int countClient = 0;
+
     static {
         try {
-            // создаем серверный сокет с на порту с указанием максимального количества подключений
+            // создаем серверный сокет на порту с указанием максимального количества подключений
             server = new ServerSocket(PORT, CLIENT_NUNBER, InetAddress.getByName("0.0.0.0"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -36,7 +29,6 @@ public class Server {
     }
 
     public static void startServer() throws IOException {
-
 
         System.out.println("Сервер запущен");
         try {
@@ -47,8 +39,15 @@ public class Server {
 
                 try {
                     // добавить новое соединенние в список
-                    serverList.add(new ServerForChat(socket));
+                    ServerForChat client = new ServerForChat(socket);
+                    serverList.add(client);
+                    System.out.println(serverList);
+                    countClient++;
+                    // каждое подключение клиента обрабатываем в новом потоке
+//                    new Thread(client).start();
                     System.out.println("Подключен новый пользователь");
+                    System.out.println("Всего пользователей в чате: " + countClient);
+
                 } catch (IOException e) {
                     socket.close();
 
