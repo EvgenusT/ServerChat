@@ -41,7 +41,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>window.MainStart</mainClass>
+                                    <mainClass>server.Main</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>
