@@ -14,9 +14,7 @@ public class Server {
     public static LinkedList<ServerForChat> serverList = new LinkedList<>();
     // количество подключений
     public static final int CLIENT_NUNBER = 10;
-
     public static ServerSocket server = null;
-
     static int countClient = 0;
 
     static {
@@ -27,7 +25,6 @@ public class Server {
             e.printStackTrace();
         }
     }
-
     public static void startServer() throws IOException {
 
         System.out.println("Сервер запущен");
@@ -41,19 +38,15 @@ public class Server {
                     // добавить новое соединенние в список
                     ServerForChat client = new ServerForChat(socket);
                     serverList.add(client);
-                    System.out.println(serverList);
                     countClient++;
-                    // каждое подключение клиента обрабатываем в новом потоке
-//                    new Thread(client).start();
+
                     System.out.println("Подключен новый пользователь");
                     System.out.println("Всего пользователей в чате: " + countClient);
 
                 } catch (IOException e) {
                     socket.close();
-
                 }
             }
-
         } finally {
             try {
                 server.close();
