@@ -4,7 +4,8 @@ import java.io.*;
 import java.net.Socket;
 
 class ServerForChat extends Thread {
-
+// какая ветка ?
+    
     private final Socket socket; // сокет, через который сервер общается с клиентом,
     // кроме него - клиент и сервер никак не связаны
     private final BufferedReader in; // поток чтения из сокета
