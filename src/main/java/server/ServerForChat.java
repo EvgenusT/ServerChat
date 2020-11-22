@@ -54,7 +54,8 @@ class ServerForChat extends Thread {
         }
     }
 
-    private void send(String msg) {
+    private void send(String msg) throws UnsupportedEncodingException {
+
         try {
             if (!msg.isEmpty()) {
                 out.write(msg + "\n");
