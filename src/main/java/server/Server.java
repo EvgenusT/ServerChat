@@ -10,12 +10,16 @@ public class Server {
 
     // порт для подключения
     public static final int PORT = 18080;
-    // список клиентов
-    public static LinkedList<ServerForChat> serverList = new LinkedList<>();
+
     // количество подключений
     public static final int CLIENT_NUNBER = 10;
-    public static ServerSocket server = null;
     static int countClient = 0;
+
+    public static ServerSocket server = null;
+    public static Socket socet = null;
+
+    // список клиентов
+    public static LinkedList<ServerForChat> clientList = new LinkedList<>();
 
     static {
         try {
@@ -25,39 +29,36 @@ public class Server {
             e.printStackTrace();
         }
     }
-    public static void startServer() throws IOException {
 
+    public static void startServer() throws IOException {
         System.out.println("Сервер запущен");
         try {
             while (true) {
                 // Блокируется до возникновения нового соединения:
-                Socket socket = null;
-                socket = server.accept();
+                socet = server.accept();
 
                 try {
                     // добавить новое соединенние в список
-                    ServerForChat client = new ServerForChat(socket);
-                    serverList.add(client);
-                    countClient++;
+                    ServerForChat client = new ServerForChat(socet);
+                    clientList.add(client);
+                    // каждое подключение клиента обрабатываем в новом потоке
+//                    new Thread(client).start(); - при включении по
 
                     System.out.println("Подключен новый пользователь");
-                    System.out.println("Всего пользователей в чате: " + countClient);
+                    System.out.println("Всего пользователей в чате: " + clientList.size());
+                    System.out.println(clientList);
 
                 } catch (IOException e) {
-                    socket.close();
+                    socet.close();
                 }
             }
         } finally {
             try {
-                server.close();
+                socet.close();
+                socet.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static void clouseServer() throws IOException {
-        server.close();
-        System.out.println("Сервер остановлен");
     }
 }

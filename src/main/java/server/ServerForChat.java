@@ -2,6 +2,10 @@ package server;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static server.Server.clientList;
 
 class ServerForChat extends Thread {
 
@@ -16,10 +20,8 @@ class ServerForChat extends Thread {
 
     public ServerForChat(Socket socket) throws IOException {
         this.socket = socket;
-        // если потоку ввода/вывода приведут к генерированию искдючения, оно проброситься дальше
         in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-
         // вызываем run()
         start();
     }
@@ -38,15 +40,25 @@ class ServerForChat extends Thread {
             try {
                 while (true) {
                     word = in.readLine();
-//                    if (word.equals("stop")) {
-//                        break;
-//                    }
-                    System.out.println("Echoing: " + word);
-                    for (ServerForChat client : Server.serverList) {
-                        client.send(word); // отослать принятое сообщение с привязанного клиента всем остальным влючая его
+                    Matcher matcher = Pattern.compile("[:]\\t.+$").matcher(word);
+                    String result;
+                    for (result = ""; matcher.find(); result = matcher.group()) {
+                    }
+                    String resOut = result.substring(2);
+
+                    if (resOut.equals("StoP+-+")) {
+                        downService();
+                    } else {
+                        System.out.println("Echoing: " + word);
+                        for (ServerForChat client : clientList) {
+
+                            client.send(word); // отослать принятое сообщение с привязанного клиента всем остальным влючая его
+                        }
+                        System.out.println("клиенты на сервере: " + clientList);
                     }
                 }
-            } catch (NullPointerException ignored) {
+            } catch (StringIndexOutOfBoundsException d) {
+                this.downService();
             }
 
         } catch (IOException e) {
@@ -73,10 +85,14 @@ class ServerForChat extends Thread {
                 socket.close();
                 in.close();
                 out.close();
-                for (ServerForChat vr : Server.serverList) {
-                    if (vr.equals(this)) vr.interrupt();
-                    Server.serverList.remove(this);
+                for (ServerForChat vr : clientList) {
+                    if (vr.equals(this)) {
+                        vr.interrupt();
+                        clientList.remove(this);
+                        System.out.println("клиент покинул чат");
+                    }
                 }
+
             }
         } catch (IOException ignored) {
         }
