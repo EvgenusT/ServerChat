@@ -2,10 +2,10 @@ package server;
 
 import java.io.*;
 import java.net.Socket;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static server.Server.clientList;
+import static server.Server.*;
 
 class ServerForChat extends Thread {
 
@@ -40,6 +40,10 @@ class ServerForChat extends Thread {
             try {
                 while (true) {
                     word = in.readLine();
+                    //эксперемент с кодировкой
+
+                    String encodedMess = URLEncoder.encode(word, "Windows-1251");
+                    System.out.println("в ин пришло: " + encodedMess);
 
                     //организация отключения клиента по нажанию кнопки: "Отключиться от чата"
                     Matcher matcher = Pattern.compile("[:]\\t.+$").matcher(word);
@@ -69,6 +73,7 @@ class ServerForChat extends Thread {
 
     private void send(String msg) throws UnsupportedEncodingException {
 
+        System.out.println(msg);
         try {
             if (!msg.isEmpty()) {
                 out.write(msg + "\n");
