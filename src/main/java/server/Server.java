@@ -46,7 +46,6 @@ public class Server {
 
                     System.out.println("Подключен новый пользователь");
                     System.out.println("Всего пользователей в чате: " + clientList.size());
-                    System.out.println(clientList);
 
                 } catch (IOException e) {
                     socet.close();

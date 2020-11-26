@@ -40,6 +40,8 @@ class ServerForChat extends Thread {
             try {
                 while (true) {
                     word = in.readLine();
+
+                    //организация отключения клиента по нажанию кнопки: "Отключиться от чата"
                     Matcher matcher = Pattern.compile("[:]\\t.+$").matcher(word);
                     String result;
                     for (result = ""; matcher.find(); result = matcher.group()) {
@@ -54,7 +56,6 @@ class ServerForChat extends Thread {
 
                             client.send(word); // отослать принятое сообщение с привязанного клиента всем остальным влючая его
                         }
-                        System.out.println("клиенты на сервере: " + clientList);
                     }
                 }
             } catch (StringIndexOutOfBoundsException d) {
@@ -72,7 +73,7 @@ class ServerForChat extends Thread {
             if (!msg.isEmpty()) {
                 out.write(msg + "\n");
                 out.flush();
-                Thread.sleep(500);
+                Thread.sleep(400);
             }
 
         } catch (IOException | InterruptedException ignored) {
