@@ -23,8 +23,8 @@ class ServerForChat extends Thread {
 
     public ServerForChat(Socket socket) throws IOException {
         this.socket = socket;
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream(),  "UTF-8"));
+        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),  "UTF-8"));
         // вызываем run()
         start();
     }
@@ -35,6 +35,7 @@ class ServerForChat extends Thread {
         try {
             // первое сообщение отправленное сюда - это никнейм
             word = in.readLine();
+
             try {
                 out.write(word + "\n");
                 out.flush(); // flush() нужен для выталкивания оставшихся данных
@@ -44,19 +45,9 @@ class ServerForChat extends Thread {
                 while (true) {
                     word = in.readLine();
 
-                    //эксперемент с кодировкой
+                    String utf8 = new String(word.getBytes("windows-1251"), "ISO-8859-1");
+                    String utf81 = new String(word.getBytes("UTF-8"), "windows-1251");
 
-                    CharsetDetector detector = new CharsetDetector();
-                    detector.setText(word.getBytes());
-                    System.out.println("в ин пришло:  " + word + "\n" + "кодировка: " + detector.detect());
-
-                    //перекодировка в нужный формат
-                    String text = detector.getString(word.getBytes(), "KOI8");
-
-                    System.out.println("\n" + "передано на кодировку: " + text + "\n");
-
-                    detector.setText(text.getBytes());
-                    System.out.println("Перекодировал текст:  " + text + "\n" + "кодировка: " + detector.detect());
 
                     //организация отключения клиента по нажанию кнопки: "Отключиться от чата"
                     Matcher matcher = Pattern.compile("[:]\\t.+$").matcher(word);
@@ -87,13 +78,13 @@ class ServerForChat extends Thread {
     private void send(String msg) throws UnsupportedEncodingException {
 
 //        String utf8 = new String(msg.getBytes("Windows-1251"), "UTF-8");
-        String utf8 = new String(msg.getBytes("UTF-8"), "Windows-1251");
+//        String utf8 = new String(msg.getBytes("UTF-8"), "Windows-1251");
 
         try {
-            if (!utf8.isEmpty()) {
-                out.write(utf8 + "\n");
+            if (!msg.isEmpty()) {
+                out.write(msg + "\n");
                 out.flush();
-                Thread.sleep(400);
+                Thread.sleep(600);
             }
 
         } catch (IOException | InterruptedException ignored) {
