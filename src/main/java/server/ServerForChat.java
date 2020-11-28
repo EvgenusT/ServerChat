@@ -1,10 +1,13 @@
 package server;
 
+import org.apache.tika.parser.txt.CharsetDetector;
+
 import java.io.*;
 import java.net.Socket;
-import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+
 import static server.Server.*;
 
 class ServerForChat extends Thread {
@@ -40,10 +43,20 @@ class ServerForChat extends Thread {
             try {
                 while (true) {
                     word = in.readLine();
+
                     //эксперемент с кодировкой
 
-                    String encodedMess = URLEncoder.encode(word, "Windows-1251");
-                    System.out.println("в ин пришло: " + encodedMess);
+                    CharsetDetector detector = new CharsetDetector();
+                    detector.setText(word.getBytes());
+                    System.out.println("в ин пришло:  " + word + "\n" + "кодировка: " + detector.detect());
+
+                    //перекодировка в нужный формат
+                    String text = detector.getString(word.getBytes(), "KOI8");
+
+                    System.out.println("\n" + "передано на кодировку: " + text + "\n");
+
+                    detector.setText(text.getBytes());
+                    System.out.println("Перекодировал текст:  " + text + "\n" + "кодировка: " + detector.detect());
 
                     //организация отключения клиента по нажанию кнопки: "Отключиться от чата"
                     Matcher matcher = Pattern.compile("[:]\\t.+$").matcher(word);
@@ -73,10 +86,12 @@ class ServerForChat extends Thread {
 
     private void send(String msg) throws UnsupportedEncodingException {
 
-        System.out.println(msg);
+//        String utf8 = new String(msg.getBytes("Windows-1251"), "UTF-8");
+        String utf8 = new String(msg.getBytes("UTF-8"), "Windows-1251");
+
         try {
-            if (!msg.isEmpty()) {
-                out.write(msg + "\n");
+            if (!utf8.isEmpty()) {
+                out.write(utf8 + "\n");
                 out.flush();
                 Thread.sleep(400);
             }
