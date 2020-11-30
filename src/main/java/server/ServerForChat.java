@@ -1,16 +1,15 @@
 package server;
 
-import org.apache.tika.parser.txt.CharsetDetector;
-
 import java.io.*;
 import java.net.Socket;
+import java.util.ConcurrentModificationException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 import static server.Server.*;
 
-class ServerForChat extends Thread {
+public class ServerForChat extends Thread {
 
     // сокет, через который сервер общается с клиентом
     private final Socket socket;
@@ -23,8 +22,8 @@ class ServerForChat extends Thread {
 
     public ServerForChat(Socket socket) throws IOException {
         this.socket = socket;
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream(),  "UTF-8"));
-        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(),  "UTF-8"));
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream(), "UTF-8"));
+        out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
         // вызываем run()
         start();
     }
@@ -59,11 +58,17 @@ class ServerForChat extends Thread {
                     if (resOut.equals("StoP+-+")) {
                         downService();
                     } else {
-                        System.out.println("Echoing: " + word);
-                        for (ServerForChat client : clientList) {
+                        try {
+                            System.out.println("Echoing: " + word);
+                            for (ServerForChat client : clientList) {
 
-                            client.send(word); // отослать принятое сообщение с привязанного клиента всем остальным влючая его
+                                client.send(word); // отослать принятое сообщение с привязанного клиента всем остальным влючая его
+                            }
+                        } catch (ConcurrentModificationException e) {
+
+                            System.out.println("конкуренция записи в лист");
                         }
+
                     }
                 }
             } catch (StringIndexOutOfBoundsException d) {
@@ -84,7 +89,7 @@ class ServerForChat extends Thread {
             if (!msg.isEmpty()) {
                 out.write(msg + "\n");
                 out.flush();
-                Thread.sleep(600);
+                Thread.sleep(200);
             }
 
         } catch (IOException | InterruptedException ignored) {

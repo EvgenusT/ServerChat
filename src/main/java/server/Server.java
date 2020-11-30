@@ -1,5 +1,7 @@
 package server;
 
+import Log.MainLogs;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -32,6 +34,7 @@ public class Server {
 
     public static void startServer() throws IOException {
         System.out.println("Сервер запущен");
+        MainLogs.logs();
         try {
             while (true) {
                 // Блокируется до возникновения нового соединения:
@@ -42,7 +45,7 @@ public class Server {
                     ServerForChat client = new ServerForChat(socet);
                     clientList.add(client);
                     // каждое подключение клиента обрабатываем в новом потоке
-//                    new Thread(client).start(); - при включении по
+                    new Thread(client).start();
 
                     System.out.println("Подключен новый пользователь");
                     System.out.println("Всего пользователей в чате: " + clientList.size());
